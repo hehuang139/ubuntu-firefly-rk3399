@@ -33,3 +33,5 @@ FIREFLY_BUILDER=firefly-ubuntu22-builder:local ./rebuild.sh all
 `scripts/qemu-smoke.py` 在已有 Firefly RK3399 QEMU 模型上用整盘镜像验证虚拟 eMMC、ARM64 内核及 Ubuntu 启动。它使用模拟设备树直接启动 Linux，实板仍要通过 HDMI、eMMC 引导、以太网及外设的首板检查。
 
 test1 的验证记录见 `records/boot-validation.txt`：该版 eMMC 镜像在 Firefly QEMU 模型中到达多用户目标和串口登录；在通用 ARM64 QEMU（4 GiB、VirtIO 显卡）中，中文 GNOME 欢迎页打开，并可进入键盘布局设置。
+
+VSEL1 test2 的 eMMC 整盘另在 2 GiB QEMU 模型里[通过串口冒烟](records/qemu-vsel1-test2.json)。[其他 RK3399 系统审计](docs/rk3399-audit.md)列出同类配置、已修复的发布物和仍待回收的候选产物。
