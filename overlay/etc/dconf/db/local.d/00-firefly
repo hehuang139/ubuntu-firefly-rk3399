@@ -1,0 +1,3 @@
+[org/gnome/desktop/interface]
+enable-animations=false
+clock-show-date=true

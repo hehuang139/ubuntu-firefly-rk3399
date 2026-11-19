@@ -1,0 +1,22 @@
+Firefly RK3399, Ubuntu 22.04.5 ARM64, kernel 6.8.0-149-generic
+
+Both final disks: partition table, U-Boot at LBA 64, entire ext4 partition
+readback SHA256, e2fsck, extlinux root PARTUUID, kernel, initrd, DTB, GNOME:
+see assemble.log. The initramfs contains fsck.ext4 and the required Rockchip
+storage controller/PHY, I2C, regulator and I/O voltage domain modules.
+
+QEMU 10.2.0 Firefly model with 2 GiB: present the final disk image as
+virtual eMMC and boot Linux directly with the model DTB.
+Six CPU cores, mmcblk0p1, fsck, ext4, systemd multi-user target and the
+Ubuntu serial login prompt were observed. See qemu-validation.json.
+The previous build had a systemd oneshot in the multi-user startup path and
+only reached its login prompt within the test timeout. Moving expansion to
+a timer allowed the final build to reach the multi-user target too.
+
+GNOME graphical check: QEMU 6.2 ARM64 virt, virtio-gpu PCI with software
+rendering, 4 GiB, six Cortex-A72 vCPUs, 800x600. The final eMMC disk was used
+in snapshot mode. GNOME Shell 42.9 registered with GDM and displayed the
+Chinese Ubuntu 22.04 setup welcome screen (gnome-first-boot.png). An earlier
+2 GiB attempt hit the GNOME session registration timeout. This does not
+exercise the board's BootROM, HDMI output, or Panfrost acceleration.
+Clicking the initial setup button opened the keyboard layout page (gnome-first-boot-next.png).

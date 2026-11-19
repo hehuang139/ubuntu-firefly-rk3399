@@ -1,0 +1,4 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# Only a newer installation should replace the default after a generic dpkg run.
+exec /usr/local/sbin/firefly-update-boot "$1"

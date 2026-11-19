@@ -1,0 +1,6 @@
+work/
+outputs/
+downloads/
+records/*.log
+records/*package-uris*.txt
+__pycache__/

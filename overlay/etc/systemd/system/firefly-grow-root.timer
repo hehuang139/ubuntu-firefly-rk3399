@@ -1,0 +1,9 @@
+[Unit]
+Description=Schedule the Firefly RK3399 root expansion after startup
+
+[Timer]
+OnActiveSec=45s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

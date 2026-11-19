@@ -1,0 +1,60 @@
+#!/bin/bash
+# SPDX-License-Identifier: MIT
+set -euo pipefail
+root=${FIREFLY_ROOTFS:-}
+release=${1:?kernel release required}
+[[ $release =~ ^[A-Za-z0-9][A-Za-z0-9.+_-]*$ ]]
+metadata="$root/etc/firefly-root-partuuid"
+# In a build chroot this is created at image assembly time.
+[[ -f $metadata ]] || exit 0
+read -r partuuid < "$metadata"
+[[ $partuuid =~ ^[0-9a-f]{8}-01$ ]]
+boot="$root/boot"
+kernel="$boot/vmlinuz-$release"
+initrd="$boot/initrd.img-$release"
+dtb="$root/lib/firmware/$release/device-tree/rockchip/rk3399-firefly.dtb"
+if [[ ! -s $kernel || ! -s $dtb || ! -s $initrd ]]; then
+  printf 'Firefly: incomplete boot files for %s; finishing a later hook or keeping the existing selection.\n' "$release" >&2
+  exit 0
+fi
+# Validate the physical board and both power rails before publishing any boot entry.
+fixer="$root/usr/local/lib/firefly-dtb.py"
+python3 "$fixer" fix "$dtb" "$dtb"
+install -d -m 0755 "$boot/firefly/$release" "$boot/extlinux"
+target="$boot/firefly/$release"
+if [[ ! -s $target/Image || $kernel -nt $target/Image ]]; then
+  staging=$(mktemp "$target/.Image.XXXXXX")
+  trap '[[ -z ${staging:-} ]] || unlink "$staging"' EXIT
+  magic=$(od -An -N2 -tx1 "$kernel" | tr -d ' \n')
+  if [[ $magic == 1f8b ]]; then gzip -dc -- "$kernel" > "$staging"; else cat -- "$kernel" > "$staging"; fi
+  [[ $(od -An -j56 -N4 -tx1 "$staging" | tr -d ' \n') == 41524d64 ]]
+  chmod 0644 "$staging"
+  mv -fT -- "$staging" "$target/Image"
+  staging=
+fi
+python3 "$fixer" fix "$dtb" "$target/rk3399-firefly.dtb"
+python3 "$fixer" check "$target/rk3399-firefly.dtb"
+conf=$(mktemp "$boot/extlinux/.extlinux.XXXXXX")
+trap '[[ -z ${conf:-} ]] || unlink "$conf"' EXIT
+printf 'DEFAULT ubuntu\nMENU TITLE Ubuntu 22.04 on Firefly RK3399\nTIMEOUT 30\n' > "$conf"
+entry() {
+  local label=$1 ver=$2
+  printf '\nLABEL %s\n  MENU LABEL Ubuntu 22.04 (%s)\n  LINUX /boot/firefly/%s/Image\n  INITRD /boot/initrd.img-%s\n  FDT /boot/firefly/%s/rk3399-firefly.dtb\n  APPEND root=PARTUUID=%s rootfstype=ext4 rw rootwait console=ttyS2,1500000n8 console=tty1\n' "$label" "$ver" "$ver" "$ver" "$ver" "$partuuid" >> "$conf"
+}
+label=ubuntu
+while IFS= read -r other; do
+  [[ $other =~ ^[A-Za-z0-9][A-Za-z0-9.+_-]*$ ]] || continue
+  [[ -s $boot/firefly/$other/Image && -s $boot/firefly/$other/rk3399-firefly.dtb && -s $boot/initrd.img-$other && -s $boot/vmlinuz-$other ]] || continue
+  # Never advertise a pre-fix or mismatched fallback DTB as bootable.
+  if ! python3 "$fixer" check "$boot/firefly/$other/rk3399-firefly.dtb"; then
+    printf 'Firefly: ignoring unsafe DTB for %s.\n' "$other" >&2
+    continue
+  fi
+  entry "$label" "$other"
+  [[ $label == ubuntu ]] || break
+  label=previous
+done < <(find "$boot/firefly" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort -Vr)
+[[ $label == previous ]]
+chmod 0644 "$conf"
+mv -fT -- "$conf" "$boot/extlinux/extlinux.conf"
+conf=

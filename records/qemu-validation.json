@@ -1,0 +1,16 @@
+{
+  "model": "firefly-rk3399",
+  "media": "virtual eMMC, direct Linux with QEMU DTB",
+  "target": "multi-user.target",
+  "root_partuuid": "22339002-01",
+  "kernel_release": "6.8.0-149-generic",
+  "duration_seconds": 132.57,
+  "checks": {
+    "ubuntu_kernel_loaded": true,
+    "all_six_cores_online": true,
+    "virtual_mmc_partition": true,
+    "ext4_root_mounted": true,
+    "systemd_multi_user_target": true,
+    "ubuntu_serial_login": true
+  }
+}

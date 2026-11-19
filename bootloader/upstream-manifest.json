@@ -1,0 +1,107 @@
+{
+  "uboot": "2025.10",
+  "tf_a": "2.13",
+  "sources": [
+    {
+      "path": "source/boot/u-boot-2025.10.tar.bz2",
+      "bytes": 33803092,
+      "sha256": "b4f032848e56cc8f213ad59f9132c084dbbb632bc29176d024e58220e0efdf4a",
+      "url": "https://sources.openwrt.org/u-boot-2025.10.tar.bz2"
+    },
+    {
+      "path": "source/boot/trusted-firmware-a-v2.13.tar.gz",
+      "bytes": 10671703,
+      "sha256": "afb5c408392fcec840bd30de9b02a236b0108142024f9853b542b596b0d894e3",
+      "url": "https://sources.openwrt.org/trusted-firmware-a-v2.13.tar.gz"
+    }
+  ],
+  "assets": {
+    "sd": [
+      {
+        "path": "source/boot/assets/sd/built.config",
+        "name": "built.config",
+        "bytes": 64373,
+        "sha256": "9b23b7b31a2d570b9598b95a44503d392d909806bae8b22b0024a96ce8ee4f27"
+      },
+      {
+        "path": "source/boot/assets/sd/fit-list.txt",
+        "name": "fit-list.txt",
+        "bytes": 3073,
+        "sha256": "d26e98134f50731e8737344b4c1c0e05ee0508711a3d6d820685783cdab1c8f3"
+      },
+      {
+        "path": "source/boot/assets/sd/idbloader.img",
+        "name": "idbloader.img",
+        "bytes": 163840,
+        "sha256": "8473cfa2ee14427529bcad1d042d4302baa5cc4ca7db5a23059c493dcd901a1b"
+      },
+      {
+        "path": "source/boot/assets/sd/u-boot-rockchip.bin",
+        "name": "u-boot-rockchip.bin",
+        "bytes": 9457664,
+        "sha256": "074afaeec584916a1d7d939b4d46a328c804c5e0754e81207ed656874f48c23c"
+      },
+      {
+        "path": "source/boot/assets/sd/u-boot.dtb",
+        "name": "u-boot.dtb",
+        "bytes": 98776,
+        "sha256": "43dd87bf548dd4667f956da0318c97705430a1c9ee7099ab758a3660d30a9e9c"
+      },
+      {
+        "path": "source/boot/assets/sd/u-boot.itb",
+        "name": "u-boot.itb",
+        "bytes": 1101824,
+        "sha256": "055fb8c8df561f1c2294814996ead9a9a3307acae7813df84cece3b141ff5166"
+      }
+    ],
+    "emmc": [
+      {
+        "path": "source/boot/assets/emmc/built.config",
+        "name": "built.config",
+        "bytes": 64373,
+        "sha256": "9b23b7b31a2d570b9598b95a44503d392d909806bae8b22b0024a96ce8ee4f27"
+      },
+      {
+        "path": "source/boot/assets/emmc/fit-list.txt",
+        "name": "fit-list.txt",
+        "bytes": 3073,
+        "sha256": "5873db257b66462fc12a82ab57f111a2f1db71b214b4916b929d6f42c5a6008e"
+      },
+      {
+        "path": "source/boot/assets/emmc/idbloader.img",
+        "name": "idbloader.img",
+        "bytes": 163840,
+        "sha256": "a61291fdb95806de79759e88c5e546a8bc91127e2e3ae6f0d4c7bfa143f4603e"
+      },
+      {
+        "path": "source/boot/assets/emmc/u-boot-rockchip.bin",
+        "name": "u-boot-rockchip.bin",
+        "bytes": 9457664,
+        "sha256": "cb2c57287af28b1abc4cb93be985a9c0afff1d6b9553429c2b9392f4b1577e8f"
+      },
+      {
+        "path": "source/boot/assets/emmc/u-boot.dtb",
+        "name": "u-boot.dtb",
+        "bytes": 98776,
+        "sha256": "077fdbfc1f0c7a243c7914a992c76a454b863855a688b290ade5d2e41abe8233"
+      },
+      {
+        "path": "source/boot/assets/emmc/u-boot.itb",
+        "name": "u-boot.itb",
+        "bytes": 1101824,
+        "sha256": "e1288e548d86632390ecd509a41843f08d7861935ae13603d5325e135513a3ee"
+      }
+    ]
+  },
+  "patches": {
+    "U-Boot": "NativeFireflyDTS explicitSPLmedium, eMMC52MHznoHS400, TFonlySDpolicyorTFrescuefirsteMMCpolicy, ENV_IS_NOWHERE, legacyboot.scrformat+LZMAFITsupport",
+    "TF-A": "DisablehostdefaultPIEforCortex-M0baremetalFirmwareonly"
+  },
+  "source_date_epoch": 1759708800,
+  "native_ddr": "rk3399-sdram-ddr3-1600.dtsi; TPL800MHzDDR3",
+  "placement_bytes": {
+    "idbloader.img": 32768,
+    "u-boot.itb": 8388608,
+    "u-boot-rockchip.bin": 32768
+  }
+}

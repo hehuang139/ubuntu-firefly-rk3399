@@ -1,0 +1,9 @@
+[Unit]
+Description=Expand the Firefly RK3399 root partition
+After=local-fs.target
+ConditionPathExists=!/var/lib/firefly/root-grown
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/firefly-grow-root
+TimeoutStartSec=5min

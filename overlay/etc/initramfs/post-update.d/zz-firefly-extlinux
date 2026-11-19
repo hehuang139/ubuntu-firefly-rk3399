@@ -1,0 +1,3 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+exec /usr/local/sbin/firefly-update-boot "$1"

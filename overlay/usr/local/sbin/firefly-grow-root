@@ -1,0 +1,19 @@
+#!/bin/bash
+# SPDX-License-Identifier: MIT
+set -euo pipefail
+rootdev=$(findmnt -n -o SOURCE /)
+rootdev=$(readlink -f -- "$rootdev")
+[[ $rootdev =~ ^/dev/mmcblk[0-9]+p1$ ]] || exit 0
+[[ $(findmnt -n -o FSTYPE /) == ext4 ]] || exit 0
+[[ $(blkid -s PARTUUID -o value "$rootdev") == "$(cat /etc/firefly-root-partuuid)" ]] || exit 0
+parent=${rootdev%p1}
+[[ $(lsblk -nr -o TYPE "$parent" | grep -c '^part$') == 1 ]] || exit 0
+status=0
+message=$(growpart "$parent" 1 2>&1) || status=$?
+printf '%s\n' "$message"
+if (( status )); then
+  [[ $status == 1 && $message == NOCHANGE:* ]] || exit "$status"
+fi
+resize2fs "$rootdev"
+install -d /var/lib/firefly
+touch /var/lib/firefly/root-grown
